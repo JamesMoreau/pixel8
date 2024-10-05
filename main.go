@@ -6,16 +6,16 @@ import (
 	"image/jpeg"
 	"image/png"
 	"log"
+	"math"
 	"os"
 	"path"
 	"strings"
 )
 
-/* 
+/*
 TODO
 -Grayscale
 -Color Palettes
--scale / block size
 */
 
 func main() {
@@ -24,7 +24,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	pixelated := pixel8(img, 0.1)
+	blockSize := 16
+	pixelated := pixel8(img, blockSize)
 	err = saveImageToFile(pixelated, "output/asuka.jpg")
 	if err != nil {
 		log.Fatal(err)
@@ -46,12 +47,12 @@ func openImage(filename string) (image.Image, error) {
 	return img, nil
 }
 
-func pixel8(img image.Image, scale float64) image.Image {
+func pixel8(img image.Image, blockSize int) image.Image {
 	width := img.Bounds().Dx()
 	height := img.Bounds().Dy()
 
-	scaledW := int(float64(width) * scale)
-	scaledH := int(float64(height) * scale)
+	scaledW := int(math.Ceil(float64(width) / float64(blockSize)))
+	scaledH := int(math.Ceil(float64(height) / float64(blockSize)))
 
 	// Resize the image to scaled down size, then resize again to original size.
 	scaledDownImg := resizeWithNearestNeighbour(img, scaledW, scaledH)
