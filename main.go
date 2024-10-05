@@ -11,6 +11,13 @@ import (
 	"strings"
 )
 
+/* 
+TODO
+-Grayscale
+-Color Palettes
+-scale / block size
+*/
+
 func main() {
 	img, err := openImage("assets/asuka.jpeg")
 	if err != nil {
@@ -26,7 +33,7 @@ func main() {
 
 func openImage(filename string) (image.Image, error) {
 	f, err := os.Open(filename)
-	if err != nil {
+	if err != nil { 
 		return nil, err
 	}
 	defer f.Close()
@@ -91,7 +98,7 @@ func saveImageToFile(img image.Image, filepath string) error {
 			return fmt.Errorf("failed to encode PNG: %v", err)
 		}
 	case ".jpg", ".jpeg":
-		err = jpeg.Encode(outFile, img, &jpeg.Options{Quality: 100}) // Adjust the quality as needed
+		err = jpeg.Encode(outFile, img, &jpeg.Options{Quality: 100})
 		if err != nil {
 			return fmt.Errorf("failed to encode JPEG: %v", err)
 		}
