@@ -15,7 +15,8 @@ import (
 
 /*
 TODO
--should i always start for loops from 0 if img rectangle doesn't necessarily start at 0.
+-should i always start for loops from 0 if img rectangle doesn't necessarily start at 0. mayybe just x := bounds.Min.X; x < bounds.Max.X;
+- use image.draw.NearestNeighbor.Scale
 */
 
 var (
@@ -83,26 +84,27 @@ func pixel8(img image.Image, blockSize int) image.Image {
 	scaledH := int(math.Ceil(float64(height) / float64(blockSize)))
 
 	// Resize the image to scaled down size, then resize again to original size.
-	scaledDownImg := resizeWithNearestNeighbour(img, scaledW, scaledH)
-	pixelatedImg := resizeWithNearestNeighbour(scaledDownImg, width, height)
+	scaledDownImg := resizeWithNearestNeighbor(img, scaledW, scaledH)
+	pixelatedImg := resizeWithNearestNeighbor(scaledDownImg, width, height)
 
 	return pixelatedImg
 }
 
-func resizeWithNearestNeighbour(img image.Image, newWidth, newHeight int) image.Image {
+func resizeWithNearestNeighbor(img image.Image, newWidth, newHeight int) image.Image {
 	newImg := image.NewRGBA(image.Rect(0, 0, newWidth, newHeight))
 
-	oldWidth := img.Bounds().Dx()
-	oldHeight := img.Bounds().Dy()
+	oldBounds := img.Bounds()
+	oldWidth := oldBounds.Dx()
+	oldHeight := oldBounds.Dy()
 
 	xScale := float64(oldWidth) / float64(newWidth)
 	yScale := float64(oldHeight) / float64(newHeight)
 
-	for x := 0; x < newWidth; x++ {
-		for y := 0; y < newHeight; y++ {
-			// Find the nearest pixel in the original image
-			srcX := int(float64(x) * xScale)
-			srcY := int(float64(y) * yScale)
+	for y := 0; y < newHeight; y++ {
+		for x := 0; x < newWidth; x++ {
+			// Calculate corresponding source coordinates based on the scaling factors
+			srcX := int(float64(x) * xScale) + oldBounds.Min.X
+			srcY := int(float64(y) * yScale) + oldBounds.Min.Y
 
 			nearestColor := img.At(srcX, srcY)
 			newImg.Set(x, y, nearestColor)
@@ -141,8 +143,9 @@ func saveImageToFile(img image.Image, filepath string) error {
 func convertToColorPalette(img image.Image, palette []color.Color) image.Image {
 	bounds := img.Bounds()
 	paletteImg := image.NewRGBA(bounds)
-	for y := 0; y < bounds.Dy(); y++ {
-		for x := 0; x < bounds.Dx(); x++ {
+	
+	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+		for x := bounds.Min.X; x < bounds.Max.X; x++ {
 			originalColor := color.RGBAModel.Convert(img.At(x, y)).(color.RGBA)
 			closestColor := findClosestPaletteColor(originalColor, palette)
 
@@ -175,14 +178,20 @@ func findClosestPaletteColor(c color.Color, palette []color.Color) color.Color {
 	return closestColor
 }
 
-// This grayscale converter uses the "Average" method.
+// Convert an image to grayscale using the "Average" method.
 func convertToGrayscale(img image.Image) image.Image {
 	bounds := img.Bounds()
 	gray := image.NewRGBA(bounds)
 
+	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+		for x := bounds.Min.X; x < bounds.Max.X; x++ {
+			r, g, b, a := img.At(x, y).RGBA()
 
-	for x := bounds.Dx(); x < bounds.Dx(); x++ {
-
+			average := (r + g + b) / 3
+			color := color.NRGBA64{R: uint16(average), G: uint16(average), B: uint16(average), A: uint16(a)}
+			
+			gray.Set(x, y, color)
+		}
 	}
 
 	return gray
