@@ -17,7 +17,8 @@ import (
 
 /*
 TODO
-- use image.draw.NearestNeighbor.Scale
+-create webpage
+-see if i can move wasm to head tag
 */
 
 var (
@@ -84,41 +85,14 @@ func pixel8(img image.Image, blockSize int) image.Image {
 	scaledW := int(math.Ceil(float64(width) / float64(blockSize)))
 	scaledH := int(math.Ceil(float64(height) / float64(blockSize)))
 
-	// Resize the image to scaled down size, then resize again to original size.
+	// Scale down the image to a smaller size, then scale back up to original size.
 	scaledDownImg := image.NewRGBA(image.Rect(0, 0, scaledW, scaledH))
 	draw.NearestNeighbor.Scale(scaledDownImg, scaledDownImg.Bounds(), img, img.Bounds(), draw.Over, nil)
 	pixelatedImg := image.NewRGBA(image.Rect(0, 0, width, height))
 	draw.NearestNeighbor.Scale(pixelatedImg, pixelatedImg.Bounds(), scaledDownImg, scaledDownImg.Bounds(), draw.Over, nil)
 
-	// scaledDownImg := resizeWithNearestNeighbor(img, scaledW, scaledH)
-	// pixelatedImg := resizeWithNearestNeighbor(scaledDownImg, width, height)
-
 	return pixelatedImg
 }
-
-// func resizeWithNearestNeighbor(img image.Image, newWidth, newHeight int) image.Image {
-// 	newImg := image.NewRGBA(image.Rect(0, 0, newWidth, newHeight))
-
-// 	oldBounds := img.Bounds()
-// 	oldWidth := oldBounds.Dx()
-// 	oldHeight := oldBounds.Dy()
-
-// 	xScale := float64(oldWidth) / float64(newWidth)
-// 	yScale := float64(oldHeight) / float64(newHeight)
-
-// 	for y := 0; y < newHeight; y++ {
-// 		for x := 0; x < newWidth; x++ {
-// 			// Calculate corresponding source coordinates based on the scaling factors
-// 			srcX := int(float64(x) * xScale) + oldBounds.Min.X
-// 			srcY := int(float64(y) * yScale) + oldBounds.Min.Y
-
-// 			nearestColor := img.At(srcX, srcY)
-// 			newImg.Set(x, y, nearestColor)
-// 		}
-// 	}
-
-// 	return newImg
-// }
 
 func saveImageToFile(img image.Image, filepath string) error {
 	outFile, err := os.Create(filepath)

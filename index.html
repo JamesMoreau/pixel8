@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>pixel8</title>
+    <!-- <link rel="icon" href="favicon.ico" type="image/x-icon" /> -->
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+
+  <body>
+    <script src="wasm_exec.js"></script>
+    <script>
+      // WASM stuff
+      const goWasm = new Go();
+
+      WebAssembly.instantiateStreaming(
+        fetch("main.wasm"),
+        goWasm.importObject
+      ).then((result) => {
+        goWasm.run(result.instance);
+      });
+
+    </script>
+
+    <h1 class="text-3xl font-bold underline">
+      Hello world!
+    </h1>
+
+    <div class="my-container" id="parent">
+      <h1 class="title">pixel8 - convert any image to pixel art</h1>
+
+    </div>
+  </body>
+
+  <footer style="display: flex; justify-content: center">
+    <p>
+      WASM Required - <a href="https://www.github.com/JamesMoreau">Github</a>
+    </p>
+  </footer>
+</html>
