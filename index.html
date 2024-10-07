@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>pixel8</title>
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
@@ -13,21 +13,23 @@
       const goWasm = new Go();
       let wasmInstance;
 
-      WebAssembly.instantiateStreaming(fetch("main.wasm"), goWasm.importObject)
-        .then((result) => {
-          wasmInstance = result.instance;
-          goWasm.run(wasmInstance);
-        });
+      WebAssembly.instantiateStreaming(
+        fetch("main.wasm"),
+        goWasm.importObject
+      ).then((result) => {
+        wasmInstance = result.instance;
+        goWasm.run(wasmInstance);
+      });
 
       // Function to handle image processing with WASM
       function processImage() {
-        const fileInput = document.getElementById('imageInput');
-        const grayscale = document.getElementById('grayscale').checked;
-        const blockSize = document.getElementById('blockSize').value;
-        const palette = document.getElementById('palette').value;
+        const fileInput = document.getElementById("imageInput");
+        const grayscale = document.getElementById("grayscale").checked;
+        const blockSize = document.getElementById("blockSize").value;
+        const palette = document.getElementById("palette").value;
 
         if (fileInput.files.length === 0) {
-          alert('Please upload an image!');
+          alert("Please upload an image!");
           return;
         }
 
@@ -36,64 +38,92 @@
         reader.onload = function () {
           const imageData = reader.result;
           // Assuming a function 'convertToPixelArt' is defined in the WASM
-          const result = window.convertToPixelArt(imageData, grayscale, blockSize, palette);
-          document.getElementById('outputImage').src = result;
+          const result = window.convertToPixelArt(
+            imageData,
+            grayscale,
+            blockSize,
+            palette
+          );
+          document.getElementById("outputImage").src = result;
         };
         reader.readAsDataURL(file);
       }
     </script>
 
-    <h1 class="text-3xl font-bold text-center mb-6">pixel8 - Convert any image to pixel art</h1>
+    <h1 class="text-3xl font-bold text-center mb-6">
+      pixel8 - Convert any image to pixel art
+    </h1>
 
     <div class="max-w-md mx-auto bg-white rounded-xl shadow-md p-6">
       <div class="mb-4">
-        <label for="imageInput" class="block text-gray-700">Upload Image:</label>
-        <input id="imageInput" type="file" accept="image/png, image/jpeg" class="block w-full text-sm text-gray-600 border border-gray-300 rounded-md cursor-pointer focus:outline-none" />
+        <label for="imageInput" class="block text-gray-700"
+          >Upload Image:</label
+        >
+        <input
+          id="imageInput"
+          type="file"
+          accept="image/png, image/jpeg"
+          class="block w-full text-sm text-gray-600 border border-gray-300 rounded-md cursor-pointer focus:outline-none"
+        />
       </div>
 
-      <div class="mb-4">
-        <!-- Block Size UI -->
-        <div class="mb-4">
-          <label for="blockSize" class="text-gray-700">Block Size: 
-            <span id="blockSizeValue" class="font-semibold">10</span>
-          </label>
-          <input
-            id="blockSize"
-            type="range"
-            min="1"
-            max="24"
-            value="10"
-            class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer mt-2"
-            oninput="document.getElementById('blockSizeValue').textContent = this.value"
-          />
-        </div>
-      
-        <!-- Color Palette UI -->
-        <div class="mb-4">
-          <label for="palette" class="text-gray-700">Color Palette:</label>
-          <select
-            id="palette"
-            class="mt-1 block w-full text-sm text-gray-600 border border-gray-300 rounded-md focus:outline-none"
-          >
-            <option value="default">Default</option>
-            <option value="vibrant">Vibrant</option>
-            <option value="pastel">Pastel</option>
-            <option value="monochrome">Monochrome</option>
-            <option value="grayscale">Grayscale</option>
-          </select>
-        </div>
+      <!-- Block Size UI -->
+      <div class="mb-4 flex items-center justify-between">
+        <label for="blockSize" class="text-gray-700"
+          >Block Size:
+          <span id="blockSizeValue" class="font-semibold ml-1">10</span>
+        </label>
+        <input
+          id="blockSize"
+          type="range"
+          min="1"
+          max="24"
+          value="10"
+          class="w-2/3 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+          oninput="document.getElementById('blockSizeValue').textContent = this.value"
+        />
       </div>
 
-      <button onclick="processImage()" class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700">Convert to Pixel Art</button>
+      <!-- Color Palette UI -->
+      <div class="mb-4 flex items-center justify-between">
+        <label for="palette" class="text-gray-700">Color Palette:</label>
+        <select
+          id="palette"
+          class="w-2/3 text-sm text-gray-600 border border-gray-300 rounded-md focus:outline-none"
+        >
+          <option value="default">Default</option>
+          <option value="vibrant">Vibrant</option>
+          <option value="pastel">Pastel</option>
+          <option value="monochrome">Monochrome</option>
+          <option value="grayscale">Grayscale</option>
+        </select>
+      </div>
+
+      <button
+        class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700"
+      >
+        Convert to Pixel Art
+      </button>
     </div>
 
     <div class="max-w-md mx-auto mt-6">
       <h2 class="text-xl font-bold text-gray-800 mb-2">Output:</h2>
-      <img id="outputImage" class="w-full border rounded-md" alt="Your pixel art will appear here." />
+      <img
+        id="outputImage"
+        class="w-full border rounded-md"
+        alt="Your pixel art will appear here."
+      />
     </div>
 
     <footer class="mt-8 text-center">
-      <p>WASM Required - <a href="https://www.github.com/JamesMoreau" class="text-blue-600 hover:underline">Github</a></p>
+      <p>
+        WASM Required -
+        <a
+          href="https://www.github.com/JamesMoreau"
+          class="text-blue-600 hover:underline"
+          >Github</a
+        >
+      </p>
     </footer>
   </body>
 </html>
