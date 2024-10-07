@@ -11,11 +11,12 @@ import (
 	"os"
 	"path"
 	"strings"
+
+	"golang.org/x/image/draw"
 )
 
 /*
 TODO
--should i always start for loops from 0 if img rectangle doesn't necessarily start at 0. mayybe just x := bounds.Min.X; x < bounds.Max.X;
 - use image.draw.NearestNeighbor.Scale
 */
 
@@ -38,7 +39,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	pixel8ed := processPixel8(img, 8, false, nesPalette)
+	pixel8ed := processPixel8(img, 8, false, nil)
 
 	err = saveImageToFile(pixel8ed, "output/asuka.jpg")
 	if err != nil {
@@ -84,35 +85,40 @@ func pixel8(img image.Image, blockSize int) image.Image {
 	scaledH := int(math.Ceil(float64(height) / float64(blockSize)))
 
 	// Resize the image to scaled down size, then resize again to original size.
-	scaledDownImg := resizeWithNearestNeighbor(img, scaledW, scaledH)
-	pixelatedImg := resizeWithNearestNeighbor(scaledDownImg, width, height)
+	scaledDownImg := image.NewRGBA(image.Rect(0, 0, scaledW, scaledH))
+	draw.NearestNeighbor.Scale(scaledDownImg, scaledDownImg.Bounds(), img, img.Bounds(), draw.Over, nil)
+	pixelatedImg := image.NewRGBA(image.Rect(0, 0, width, height))
+	draw.NearestNeighbor.Scale(pixelatedImg, pixelatedImg.Bounds(), scaledDownImg, scaledDownImg.Bounds(), draw.Over, nil)
+
+	// scaledDownImg := resizeWithNearestNeighbor(img, scaledW, scaledH)
+	// pixelatedImg := resizeWithNearestNeighbor(scaledDownImg, width, height)
 
 	return pixelatedImg
 }
 
-func resizeWithNearestNeighbor(img image.Image, newWidth, newHeight int) image.Image {
-	newImg := image.NewRGBA(image.Rect(0, 0, newWidth, newHeight))
+// func resizeWithNearestNeighbor(img image.Image, newWidth, newHeight int) image.Image {
+// 	newImg := image.NewRGBA(image.Rect(0, 0, newWidth, newHeight))
 
-	oldBounds := img.Bounds()
-	oldWidth := oldBounds.Dx()
-	oldHeight := oldBounds.Dy()
+// 	oldBounds := img.Bounds()
+// 	oldWidth := oldBounds.Dx()
+// 	oldHeight := oldBounds.Dy()
 
-	xScale := float64(oldWidth) / float64(newWidth)
-	yScale := float64(oldHeight) / float64(newHeight)
+// 	xScale := float64(oldWidth) / float64(newWidth)
+// 	yScale := float64(oldHeight) / float64(newHeight)
 
-	for y := 0; y < newHeight; y++ {
-		for x := 0; x < newWidth; x++ {
-			// Calculate corresponding source coordinates based on the scaling factors
-			srcX := int(float64(x) * xScale) + oldBounds.Min.X
-			srcY := int(float64(y) * yScale) + oldBounds.Min.Y
+// 	for y := 0; y < newHeight; y++ {
+// 		for x := 0; x < newWidth; x++ {
+// 			// Calculate corresponding source coordinates based on the scaling factors
+// 			srcX := int(float64(x) * xScale) + oldBounds.Min.X
+// 			srcY := int(float64(y) * yScale) + oldBounds.Min.Y
 
-			nearestColor := img.At(srcX, srcY)
-			newImg.Set(x, y, nearestColor)
-		}
-	}
+// 			nearestColor := img.At(srcX, srcY)
+// 			newImg.Set(x, y, nearestColor)
+// 		}
+// 	}
 
-	return newImg
-}
+// 	return newImg
+// }
 
 func saveImageToFile(img image.Image, filepath string) error {
 	outFile, err := os.Create(filepath)
@@ -189,7 +195,7 @@ func convertToGrayscale(img image.Image) image.Image {
 
 			average := (r + g + b) / 3
 			color := color.NRGBA64{R: uint16(average), G: uint16(average), B: uint16(average), A: uint16(a)}
-			
+
 			gray.Set(x, y, color)
 		}
 	}
