@@ -17,7 +17,9 @@ import (
 
 /*
 TODO
--create webpage
+-add examples
+-add custom color palette
+-show the sample color palettes 
 -see if i can move wasm to head tag
 */
 

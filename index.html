@@ -1,39 +1,86 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>pixel8</title>
-    <!-- <link rel="icon" href="favicon.ico" type="image/x-icon" /> -->
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
-
-  <body>
+  <body class="bg-gray-100 p-6">
     <script src="wasm_exec.js"></script>
     <script>
-      // WASM stuff
+      // Initialize WASM
       const goWasm = new Go();
+      let wasmInstance;
 
-      WebAssembly.instantiateStreaming(
-        fetch("main.wasm"),
-        goWasm.importObject
-      ).then((result) => {
-        goWasm.run(result.instance);
-      });
+      WebAssembly.instantiateStreaming(fetch("main.wasm"), goWasm.importObject)
+        .then((result) => {
+          wasmInstance = result.instance;
+          goWasm.run(wasmInstance);
+        });
 
+      // Function to handle image processing with WASM
+      function processImage() {
+        const fileInput = document.getElementById('imageInput');
+        const grayscale = document.getElementById('grayscale').checked;
+        const blockSize = document.getElementById('blockSize').value;
+        const palette = document.getElementById('palette').value;
+
+        if (fileInput.files.length === 0) {
+          alert('Please upload an image!');
+          return;
+        }
+
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+        reader.onload = function () {
+          const imageData = reader.result;
+          // Assuming a function 'convertToPixelArt' is defined in the WASM
+          const result = window.convertToPixelArt(imageData, grayscale, blockSize, palette);
+          document.getElementById('outputImage').src = result;
+        };
+        reader.readAsDataURL(file);
+      }
     </script>
 
-    <h1 class="text-3xl font-bold underline">
-      Hello world!
-    </h1>
+    <h1 class="text-3xl font-bold text-center mb-6">pixel8 - Convert any image to pixel art</h1>
 
-    <div class="my-container" id="parent">
-      <h1 class="title">pixel8 - convert any image to pixel art</h1>
+    <div class="max-w-md mx-auto bg-white rounded-xl shadow-md p-6">
+      <div class="mb-4">
+        <label for="imageInput" class="block text-gray-700">Upload Image:</label>
+        <input id="imageInput" type="file" accept="image/png, image/jpeg" class="block w-full text-sm text-gray-600 border border-gray-300 rounded-md cursor-pointer focus:outline-none" />
+      </div>
 
+      <div class="mb-4">
+        <label for="grayscale" class="block text-gray-700">Grayscale:</label>
+        <input id="grayscale" type="checkbox" class="h-4 w-4 text-blue-600" />
+      </div>
+
+      <div class="mb-4">
+        <label for="blockSize" class="block text-gray-700">Block Size:</label>
+        <input id="blockSize" type="number" min="1" max="100" value="10" class="mt-1 block w-full text-sm text-gray-600 border border-gray-300 rounded-md focus:outline-none" />
+      </div>
+
+      <div class="mb-4">
+        <label for="palette" class="block text-gray-700">Color Palette:</label>
+        <select id="palette" class="block w-full text-sm text-gray-600 border border-gray-300 rounded-md focus:outline-none">
+          <option value="default">Default</option>
+          <option value="vibrant">Vibrant</option>
+          <option value="pastel">Pastel</option>
+          <option value="monochrome">Monochrome</option>
+        </select>
+      </div>
+
+      <button onclick="processImage()" class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700">Convert to Pixel Art</button>
     </div>
-  </body>
 
-  <footer style="display: flex; justify-content: center">
-    <p>
-      WASM Required - <a href="https://www.github.com/JamesMoreau">Github</a>
-    </p>
-  </footer>
+    <div class="max-w-md mx-auto mt-6">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Output:</h2>
+      <img id="outputImage" class="w-full border rounded-md" alt="Your pixel art will appear here." />
+    </div>
+
+    <footer class="mt-8 text-center">
+      <p>WASM Required - <a href="https://www.github.com/JamesMoreau" class="text-blue-600 hover:underline">Github</a></p>
+    </footer>
+  </body>
 </html>
