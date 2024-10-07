@@ -51,24 +51,32 @@
         <input id="imageInput" type="file" accept="image/png, image/jpeg" class="block w-full text-sm text-gray-600 border border-gray-300 rounded-md cursor-pointer focus:outline-none" />
       </div>
 
-      <div class="mb-4">
-        <label for="grayscale" class="block text-gray-700">Grayscale:</label>
-        <input id="grayscale" type="checkbox" class="h-4 w-4 text-blue-600" />
-      </div>
-
-      <div class="mb-4">
-        <label for="blockSize" class="block text-gray-700">Block Size:</label>
-        <input id="blockSize" type="number" min="1" max="100" value="10" class="mt-1 block w-full text-sm text-gray-600 border border-gray-300 rounded-md focus:outline-none" />
-      </div>
-
-      <div class="mb-4">
-        <label for="palette" class="block text-gray-700">Color Palette:</label>
-        <select id="palette" class="block w-full text-sm text-gray-600 border border-gray-300 rounded-md focus:outline-none">
-          <option value="default">Default</option>
-          <option value="vibrant">Vibrant</option>
-          <option value="pastel">Pastel</option>
-          <option value="monochrome">Monochrome</option>
-        </select>
+      <div class="mb-4 flex items-center space-x-4">
+        <div class="flex items-center">
+          <label for="blockSize" class="text-gray-700 mr-2">Block Size: 
+            <span id="blockSizeValue" class="font-semibold">10</span>
+          </label>
+          <input
+            id="blockSize"
+            type="range"
+            min="1"
+            max="24"
+            value="10"
+            class="h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+            oninput="document.getElementById('blockSizeValue').textContent = this.value"
+          />
+        </div>
+      
+        <div class="flex items-center">
+          <label for="palette" class="text-gray-700 mr-2">Color Palette:</label>
+          <select id="palette" class="text-sm text-gray-600 border border-gray-300 rounded-md focus:outline-none">
+            <option value="default">Default</option>
+            <option value="vibrant">Vibrant</option>
+            <option value="pastel">Pastel</option>
+            <option value="monochrome">Monochrome</option>
+            <option value="grayscale">Grayscale</option>
+          </select>
+        </div>
       </div>
 
       <button onclick="processImage()" class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700">Convert to Pixel Art</button>
