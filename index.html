@@ -51,9 +51,10 @@
         <input id="imageInput" type="file" accept="image/png, image/jpeg" class="block w-full text-sm text-gray-600 border border-gray-300 rounded-md cursor-pointer focus:outline-none" />
       </div>
 
-      <div class="mb-4 flex items-center space-x-4">
-        <div class="flex items-center">
-          <label for="blockSize" class="text-gray-700 mr-2">Block Size: 
+      <div class="mb-4">
+        <!-- Block Size UI -->
+        <div class="mb-4">
+          <label for="blockSize" class="text-gray-700">Block Size: 
             <span id="blockSizeValue" class="font-semibold">10</span>
           </label>
           <input
@@ -62,14 +63,18 @@
             min="1"
             max="24"
             value="10"
-            class="h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+            class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer mt-2"
             oninput="document.getElementById('blockSizeValue').textContent = this.value"
           />
         </div>
       
-        <div class="flex items-center">
-          <label for="palette" class="text-gray-700 mr-2">Color Palette:</label>
-          <select id="palette" class="text-sm text-gray-600 border border-gray-300 rounded-md focus:outline-none">
+        <!-- Color Palette UI -->
+        <div class="mb-4">
+          <label for="palette" class="text-gray-700">Color Palette:</label>
+          <select
+            id="palette"
+            class="mt-1 block w-full text-sm text-gray-600 border border-gray-300 rounded-md focus:outline-none"
+          >
             <option value="default">Default</option>
             <option value="vibrant">Vibrant</option>
             <option value="pastel">Pastel</option>
