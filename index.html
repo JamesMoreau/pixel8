@@ -48,22 +48,58 @@
         };
         reader.readAsDataURL(file);
       }
+
+      function updatePaletteColors() {
+        const palette = document.getElementById("palette").value;
+        const colorDisplay = document.getElementById("colorDisplay");
+
+        // Define color palettes
+        const palettes = {
+          default: ["#000000", "#FFFFFF", "#FF0000", "#00FF00", "#0000FF"],
+          vibrant: ["#E63946", "#F1FA3C", "#A8DADC", "#457B9D", "#1D3557"],
+          pastel: ["#FFD1DC", "#AFCBFF", "#C3E8BD", "#FFABAB", "#FFC3A0"],
+          grayscale: [
+            "#000000",
+            "#333333",
+            "#666666",
+            "#999999",
+            "#CCCCCC",
+            "#FFFFFF",
+          ],
+        };
+
+        // Get the colors for the selected palette, defaulting to an empty array if not found
+        const colors = palettes[palette] || [];
+
+        // Clear the current color display
+        colorDisplay.innerHTML = "";
+
+        // Create and append color swatches
+        colors.forEach((color) => {
+          const colorSwatch = document.createElement("div");
+          colorSwatch.style.backgroundColor = color;
+          colorSwatch.className = "w-6 h-6 border border-gray-300";
+          colorDisplay.appendChild(colorSwatch);
+        });
+      }
+
+      // Initialize with the default palette colors
+      updatePaletteColors();
     </script>
 
-    <h1 class="text-3xl font-bold text-center mb-6">
-      pixel8 - Convert any image to pixel art
-    </h1>
+    <h1 class="text-3xl font-bold text-center mb-1">pixel8</h1>
+    <h2 class="text-lg text-gray-600 text-center mb-6">
+      Convert any image to pixel art
+    </h2>
 
     <div class="max-w-md mx-auto bg-white rounded-xl shadow-md p-6">
-      <div class="mb-4">
-        <label for="imageInput" class="block text-gray-700"
-          >Upload Image:</label
-        >
+      <div class="mb-4 flex items-center justify-between">
+        <label for="imageInput" class="text-gray-700">Upload Image:</label>
         <input
           id="imageInput"
           type="file"
           accept="image/png, image/jpeg"
-          class="block w-full text-sm text-gray-600 border border-gray-300 rounded-md cursor-pointer focus:outline-none"
+          class="w-2/3 text-sm text-gray-600 border border-gray-300 rounded-md cursor-pointer focus:outline-none"
         />
       </div>
 
@@ -90,14 +126,17 @@
         <select
           id="palette"
           class="w-2/3 text-sm text-gray-600 border border-gray-300 rounded-md focus:outline-none"
+          onchange="updatePaletteColors()"
         >
           <option value="default">Default</option>
           <option value="vibrant">Vibrant</option>
           <option value="pastel">Pastel</option>
-          <option value="monochrome">Monochrome</option>
           <option value="grayscale">Grayscale</option>
         </select>
       </div>
+
+      <!-- Container for displaying the colors of the selected palette -->
+      <div id="colorDisplay" class="flex space-x-2 mt-2"></div>
 
       <button
         class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700"
