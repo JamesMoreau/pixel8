@@ -21,6 +21,7 @@ TODO
 -add custom color palette
 -show the sample color palettes 
 -see if i can move wasm to head tag
+- whyy: originalColor := color.RGBAModel.Convert(img.At(x, y)).(color.RGBA)
 */
 
 var (

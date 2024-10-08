@@ -37,7 +37,6 @@
         const reader = new FileReader();
         reader.onload = function () {
           const imageData = reader.result;
-          // Assuming a function 'convertToPixelArt' is defined in the WASM
           const result = window.convertToPixelArt(
             imageData,
             grayscale,
@@ -48,43 +47,6 @@
         };
         reader.readAsDataURL(file);
       }
-
-      function updatePaletteColors() {
-        const palette = document.getElementById("palette").value;
-        const colorDisplay = document.getElementById("colorDisplay");
-
-        // Define color palettes
-        const palettes = {
-          default: ["#000000", "#FFFFFF", "#FF0000", "#00FF00", "#0000FF"],
-          vibrant: ["#E63946", "#F1FA3C", "#A8DADC", "#457B9D", "#1D3557"],
-          pastel: ["#FFD1DC", "#AFCBFF", "#C3E8BD", "#FFABAB", "#FFC3A0"],
-          grayscale: [
-            "#000000",
-            "#333333",
-            "#666666",
-            "#999999",
-            "#CCCCCC",
-            "#FFFFFF",
-          ],
-        };
-
-        // Get the colors for the selected palette, defaulting to an empty array if not found
-        const colors = palettes[palette] || [];
-
-        // Clear the current color display
-        colorDisplay.innerHTML = "";
-
-        // Create and append color swatches
-        colors.forEach((color) => {
-          const colorSwatch = document.createElement("div");
-          colorSwatch.style.backgroundColor = color;
-          colorSwatch.className = "w-6 h-6 border border-gray-300";
-          colorDisplay.appendChild(colorSwatch);
-        });
-      }
-
-      // Initialize with the default palette colors
-      updatePaletteColors();
     </script>
 
     <h1 class="text-3xl font-bold text-center mb-1">pixel8</h1>
@@ -132,17 +94,59 @@
           <option value="vibrant">Vibrant</option>
           <option value="pastel">Pastel</option>
           <option value="grayscale">Grayscale</option>
+          <option value="nes">NES Palette</option>
         </select>
       </div>
-
+      
       <!-- Container for displaying the colors of the selected palette -->
-      <div id="colorDisplay" class="flex space-x-2 mt-2"></div>
-
-      <button
-        class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700"
-      >
+      <div id="colorDisplay" class="flex space-x-2 mt-4 mb-4"></div>
+      
+      <button class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700">
         Convert to Pixel Art
       </button>
+
+      <script>
+        function updatePaletteColors() {
+          const palette = document.getElementById('palette').value;
+          const colorDisplay = document.getElementById('colorDisplay');
+      
+          // Define color palettes
+          const palettes = {
+            default: ['#000000', '#FFFFFF', '#FF0000', '#00FF00', '#0000FF'],
+            vibrant: ['#E63946', '#F1FA3C', '#A8DADC', '#457B9D', '#1D3557'],
+            pastel: ['#FFD1DC', '#AFCBFF', '#C3E8BD', '#FFABAB', '#FFC3A0'],
+            grayscale: ['#000000', '#333333', '#666666', '#999999', '#CCCCCC', '#FFFFFF'],
+            nes: [
+              '#808080', // Gray
+              '#0000FF', // Blue
+              '#00FF00', // Green
+              '#FF0000', // Red
+              '#FFFF00', // Yellow
+              '#FFA500', // Orange
+              '#000000', // Black
+              '#FFFFFF', // White
+            ],
+          };
+      
+          // Get the colors for the selected palette, defaulting to an empty array if not found
+          const colors = palettes[palette] || [];
+      
+          // Clear the current color display
+          colorDisplay.innerHTML = '';
+      
+          // Create and append color swatches
+          colors.forEach(color => {
+            const colorSwatch = document.createElement('div');
+            colorSwatch.style.backgroundColor = color;
+            colorSwatch.className = 'w-6 h-6 rounded-full border border-gray-300';
+            colorDisplay.appendChild(colorSwatch);
+          });
+        }
+      
+        // Initialize with the default palette colors
+        updatePaletteColors();
+      </script>
+      
     </div>
 
     <div class="max-w-md mx-auto mt-6">
