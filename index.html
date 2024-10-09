@@ -7,48 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body class="bg-gray-100 p-6">
-    <script src="wasm_exec.js"></script>
-    <script>
-      // Initialize WASM
-      const goWasm = new Go();
-      let wasmInstance;
-
-      WebAssembly.instantiateStreaming(
-        fetch("main.wasm"),
-        goWasm.importObject
-      ).then((result) => {
-        wasmInstance = result.instance;
-        goWasm.run(wasmInstance);
-      });
-
-      // Function to handle image processing with WASM
-      function processImage() {
-        const fileInput = document.getElementById("imageInput");
-        const grayscale = document.getElementById("grayscale").checked;
-        const blockSize = document.getElementById("blockSize").value;
-        const palette = document.getElementById("palette").value;
-
-        if (fileInput.files.length === 0) {
-          alert("Please upload an image!");
-          return;
-        }
-
-        const file = fileInput.files[0];
-        const reader = new FileReader();
-        reader.onload = function () {
-          const imageData = reader.result;
-          const result = window.convertToPixelArt(
-            imageData,
-            grayscale,
-            blockSize,
-            palette
-          );
-          document.getElementById("outputImage").src = result;
-        };
-        reader.readAsDataURL(file);
-      }
-    </script>
-
     <h1 class="text-3xl font-bold text-center mb-1">pixel8</h1>
     <h2 class="text-lg text-gray-600 text-center mb-6">
       Convert any image to pixel art
@@ -97,55 +55,16 @@
           <option value="nes">NES Palette</option>
         </select>
       </div>
-      
+
       <!-- Container for displaying the colors of the selected palette -->
       <div id="colorDisplay" class="flex space-x-2 mt-4 mb-4"></div>
-      
-      <button class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700">
+
+      <button
+        onclick="processImage()"
+        class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700"
+      >
         Convert to Pixel Art
       </button>
-
-      <script>
-        const palettes = {
-          default: ["#000000", "#FFFFFF", "#FF0000", "#00FF00", "#0000FF"],
-          vibrant: ["#E63946", "#F1FA3C", "#A8DADC", "#457B9D", "#1D3557"],
-          pastel: ["#FFD1DC", "#AFCBFF", "#C3E8BD", "#FFABAB", "#FFC3A0"],
-          grayscale: ["#000000", "#333333", "#666666", "#999999", "#CCCCCC", "#FFFFFF"],
-          nes: [
-            "#808080", // Gray
-            "#0000FF", // Blue
-            "#00FF00", // Green
-            "#FF0000", // Red
-            "#FFFF00", // Yellow
-            "#FFA500", // Orange
-            "#000000", // Black
-            "#FFFFFF", // White
-          ],
-        };
-
-        function updatePaletteColors() {
-          const palette = document.getElementById('palette').value;
-          const colorDisplay = document.getElementById('colorDisplay');
-      
-          // Get the colors for the selected palette, defaulting to an empty array if not found
-          const colors = palettes[palette] || [];
-      
-          // Clear the current color display
-          colorDisplay.innerHTML = '';
-      
-          // Create and append color swatches
-          colors.forEach(color => {
-            const colorSwatch = document.createElement('div');
-            colorSwatch.style.backgroundColor = color;
-            colorSwatch.className = 'w-6 h-6 rounded-full border border-gray-300';
-            colorDisplay.appendChild(colorSwatch);
-          });
-        }
-      
-        // Initialize with the default palette colors
-        updatePaletteColors();
-      </script>
-      
     </div>
 
     <div class="max-w-md mx-auto mt-6">
@@ -167,5 +86,98 @@
         >
       </p>
     </footer>
+
+    <!-- Script moved to the bottom of the page -->
+    <script src="wasm_exec.js"></script>
+    <script>
+      // Initialize WASM
+      const goWasm = new Go();
+      let wasmInstance;
+
+      WebAssembly.instantiateStreaming(
+        fetch("main.wasm"),
+        goWasm.importObject
+      ).then((result) => {
+        wasmInstance = result.instance;
+        goWasm.run(wasmInstance);
+      });
+
+      // Function to handle image processing with WASM
+      function processImage() {
+        const fileInput = document.getElementById("imageInput");
+        const blockSize = document.getElementById("blockSize").value;
+        const palette = getPaletteColors();
+
+        if (fileInput.files.length === 0) {
+          alert("Please upload an image!");
+          return;
+        }
+
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+        reader.onload = function () {
+          const imageData = reader.result;
+          const result = window.convertToPixelArt(
+            imageData,
+            blockSize,
+            palette
+          );
+          document.getElementById("outputImage").src = result;
+        };
+        reader.readAsDataURL(file);
+      }
+
+      const palettes = {
+        default: ["#000000", "#FFFFFF", "#FF0000", "#00FF00", "#0000FF"],
+        vibrant: ["#E63946", "#F1FA3C", "#A8DADC", "#457B9D", "#1D3557"],
+        pastel: ["#FFD1DC", "#AFCBFF", "#C3E8BD", "#FFABAB", "#FFC3A0"],
+        grayscale: [
+          "#000000",
+          "#333333",
+          "#666666",
+          "#999999",
+          "#CCCCCC",
+          "#FFFFFF",
+        ],
+        nes: [
+          "#808080", // Gray
+          "#0000FF", // Blue
+          "#00FF00", // Green
+          "#FF0000", // Red
+          "#FFFF00", // Yellow
+          "#FFA500", // Orange
+          "#000000", // Black
+          "#FFFFFF", // White
+        ],
+      };
+
+      function updatePaletteColors() {
+        const palette = document.getElementById("palette").value;
+        const colorDisplay = document.getElementById("colorDisplay");
+
+        // Get the colors for the selected palette, defaulting to an empty array if not found
+        const colors = palettes[palette] || [];
+
+        // Clear the current color display
+        colorDisplay.innerHTML = "";
+
+        // Create and append color swatches
+        colors.forEach((color) => {
+          const colorSwatch = document.createElement("div");
+          colorSwatch.style.backgroundColor = color;
+          colorSwatch.className = "w-6 h-6 rounded-full border border-gray-300";
+          colorDisplay.appendChild(colorSwatch);
+        });
+      }
+
+      // Function to retrieve the selected palette's colors as an array
+      function getPaletteColors() {
+        const palette = document.getElementById("palette").value;
+        return palettes[palette] || [];
+      }
+
+      // Initialize with the default palette colors once the DOM is fully loaded
+      updatePaletteColors();
+    </script>
   </body>
 </html>

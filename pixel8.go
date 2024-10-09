@@ -19,9 +19,7 @@ import (
 TODO
 -add examples
 -add custom color palette
--show the sample color palettes
 -delete openImage
--see if i can move wasm to head tag
 - whyy: originalColor := color.RGBAModel.Convert(img.At(x, y)).(color.RGBA)
 */
 
