@@ -6,11 +6,11 @@ import (
 	"image/color"
 	"image/jpeg"
 	"image/png"
-	"log"
 	"math"
 	"os"
 	"path"
 	"strings"
+	"syscall/js"
 
 	"golang.org/x/image/draw"
 )
@@ -19,7 +19,8 @@ import (
 TODO
 -add examples
 -add custom color palette
--show the sample color palettes 
+-show the sample color palettes
+-delete openImage
 -see if i can move wasm to head tag
 - whyy: originalColor := color.RGBAModel.Convert(img.At(x, y)).(color.RGBA)
 */
@@ -38,17 +39,13 @@ var (
 )
 
 func main() {
-	img, err := openImage("assets/asuka.jpeg")
-	if err != nil {
-		log.Fatal(err)
-	}
+	fmt.Println("Hello web assembly from go!")
+	js.Global().Set("generatePassword", js.FuncOf(jsWrapperPixel8))
+	select {} // This runs forever so that the go program never exits.
+}
 
-	pixel8ed := processPixel8(img, 8, false, nil)
-
-	err = saveImageToFile(pixel8ed, "output/asuka.jpg")
-	if err != nil {
-		log.Fatal(err)
-	}
+func jsWrapperPixel8(this js.Value, inputs []js.Value) interface{} {
+	return ""
 }
 
 func processPixel8(img image.Image, blockSize int, grayscale bool, palette []color.Color) image.Image {
