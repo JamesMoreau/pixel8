@@ -48,16 +48,38 @@
           class="w-2/3 text-sm text-gray-600 border border-gray-300 rounded-md focus:outline-none"
           onchange="updatePaletteColors()"
         >
-          <option value="default">Default</option>
+          <option value="none">None (Original Colors)</option>
           <option value="vibrant">Vibrant</option>
           <option value="pastel">Pastel</option>
           <option value="grayscale">Grayscale</option>
           <option value="nes">NES Palette</option>
+          <option value="custom">Custom</option>
         </select>
       </div>
 
       <!-- Container for displaying the colors of the selected palette -->
       <div id="colorDisplay" class="flex space-x-2 mt-4 mb-4"></div>
+
+      <!-- Custom Palette Inputs (hidden by default) -->
+      <div id="customPaletteContainer" class="mb-4" style="display: none">
+        <label for="customPaletteColors" class="text-gray-700"
+          >Custom Colors:</label
+        >
+        <div id="customPaletteColors" class="flex flex-wrap gap-2 mt-2">
+          <input
+            type="color"
+            class="w-10 h-10"
+            onchange="updateCustomPalette()"
+          />
+          <button
+            type="button"
+            onclick="addCustomColor()"
+            class="bg-gray-300 px-2 py-1 rounded"
+          >
+            + Add Color
+          </button>
+        </div>
+      </div>
 
       <button
         onclick="processImage()"
@@ -102,7 +124,6 @@
       });
 
       const palettes = {
-        default: ["#000000", "#FFFFFF", "#FF0000", "#00FF00", "#0000FF"],
         vibrant: ["#E63946", "#F1FA3C", "#A8DADC", "#457B9D", "#1D3557"],
         pastel: ["#FFD1DC", "#AFCBFF", "#C3E8BD", "#FFABAB", "#FFC3A0"],
         grayscale: [
@@ -117,19 +138,21 @@
           "#808080",
           "#0000FF",
           "#00FF00",
-          "#FF0000", 
+          "#FF0000",
           "#FFFF00",
           "#FFA500",
           "#000000",
           "#FFFFFF",
         ],
+        custom: [],
       };
 
       function processImage() {
         const fileInput = document.getElementById("imageInput");
         const blockSize = document.getElementById("blockSize").value;
         const paletteSelection = document.getElementById("palette").value;
-        const palettes = palettes[palette] || [];
+        const palette =
+          paletteSelection === "none" ? [] : palettes[paletteSelection] || [];
 
         if (fileInput.files.length === 0) {
           alert("Please upload an image!");
@@ -153,6 +176,15 @@
       function updatePaletteColors() {
         const palette = document.getElementById("palette").value;
         const colorDisplay = document.getElementById("colorDisplay");
+        const customPaletteContainer = document.getElementById(
+          "customPaletteContainer"
+        );
+
+        if (palette === "custom") {
+          customPaletteContainer.style.display = "block";
+        } else {
+          customPaletteContainer.style.display = "none";
+        }
 
         const colors = palettes[palette] || [];
 
@@ -166,7 +198,27 @@
         });
       }
 
-      // Initialize with the default palette colors once the DOM is fully loaded
+      function addCustomColor() {
+        const customPaletteColors = document.getElementById(
+          "customPaletteColors"
+        );
+        const colorInput = document.createElement("input");
+        colorInput.type = "color";
+        colorInput.className = "w-10 h-10";
+        colorInput.onchange = updateCustomPalette;
+        customPaletteColors.appendChild(colorInput);
+      }
+
+      function updateCustomPalette() {
+        const customPaletteColors = document.querySelectorAll(
+          "#customPaletteColors input[type='color']"
+        );
+        palettes.custom = Array.from(customPaletteColors).map(
+          (input) => input.value
+        );
+        updatePaletteColors();
+      }
+
       updatePaletteColors();
     </script>
   </body>
