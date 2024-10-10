@@ -86,10 +86,14 @@
 
     <div class="max-w-md mx-auto mt-6">
       <h2 class="text-xl font-bold text-gray-800 mb-2">Output:</h2>
+      <div id="outputPlaceholder" class="text-gray-500 text-center">
+        <p>Your pixel art will appear here.</p>
+      </div>
       <img
         id="outputImage"
         class="w-full border rounded-md"
-        alt="Your pixel art will appear here."
+        style="display: none"
+        alt="Processed pixel art output"
       />
     </div>
 
@@ -170,7 +174,14 @@
           );
 
           // Display the resulting image.
-          document.getElementById("outputImage").src = resultImageData;
+          const outputImage = document.getElementById("outputImage");
+          const outputPlaceholder =
+            document.getElementById("outputPlaceholder");
+
+          // Hide the placeholder and show the processed image.
+          outputPlaceholder.style.display = "none";
+          outputImage.style.display = "block";
+          outputImage.src = resultImageData;
         };
         reader.readAsDataURL(file);
       }

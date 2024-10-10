@@ -62,14 +62,15 @@ func jsWrapperProcessPixel8(this js.Value, inputs []js.Value) interface{} {
 
 func decodeBase64Image(data string) (image.Image, error) {
 	data = data[strings.IndexByte(data, ',')+1:] // Remove the data URL prefix if it exists.
+
 	decoded, err := base64.StdEncoding.DecodeString(data)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to decode base64: %w", err)
 	}
 
-	img, err := png.Decode(bytes.NewReader(decoded))
+	img, _, err := image.Decode(bytes.NewReader(decoded))
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to decode image: %w", err)
 	}
 
 	return img, nil
