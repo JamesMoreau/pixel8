@@ -87,7 +87,6 @@
       </p>
     </footer>
 
-    <!-- Script moved to the bottom of the page -->
     <script src="wasm_exec.js"></script>
     <script>
       // Initialize WASM
@@ -102,11 +101,35 @@
         goWasm.run(wasmInstance);
       });
 
-      // Function to handle image processing with WASM
+      const palettes = {
+        default: ["#000000", "#FFFFFF", "#FF0000", "#00FF00", "#0000FF"],
+        vibrant: ["#E63946", "#F1FA3C", "#A8DADC", "#457B9D", "#1D3557"],
+        pastel: ["#FFD1DC", "#AFCBFF", "#C3E8BD", "#FFABAB", "#FFC3A0"],
+        grayscale: [
+          "#000000",
+          "#333333",
+          "#666666",
+          "#999999",
+          "#CCCCCC",
+          "#FFFFFF",
+        ],
+        nes: [
+          "#808080",
+          "#0000FF",
+          "#00FF00",
+          "#FF0000", 
+          "#FFFF00",
+          "#FFA500",
+          "#000000",
+          "#FFFFFF",
+        ],
+      };
+
       function processImage() {
         const fileInput = document.getElementById("imageInput");
         const blockSize = document.getElementById("blockSize").value;
-        const palette = getPaletteColors();
+        const paletteSelection = document.getElementById("palette").value;
+        const palettes = palettes[palette] || [];
 
         if (fileInput.files.length === 0) {
           alert("Please upload an image!");
@@ -127,53 +150,20 @@
         reader.readAsDataURL(file);
       }
 
-      const palettes = {
-        default: ["#000000", "#FFFFFF", "#FF0000", "#00FF00", "#0000FF"],
-        vibrant: ["#E63946", "#F1FA3C", "#A8DADC", "#457B9D", "#1D3557"],
-        pastel: ["#FFD1DC", "#AFCBFF", "#C3E8BD", "#FFABAB", "#FFC3A0"],
-        grayscale: [
-          "#000000",
-          "#333333",
-          "#666666",
-          "#999999",
-          "#CCCCCC",
-          "#FFFFFF",
-        ],
-        nes: [
-          "#808080", // Gray
-          "#0000FF", // Blue
-          "#00FF00", // Green
-          "#FF0000", // Red
-          "#FFFF00", // Yellow
-          "#FFA500", // Orange
-          "#000000", // Black
-          "#FFFFFF", // White
-        ],
-      };
-
       function updatePaletteColors() {
         const palette = document.getElementById("palette").value;
         const colorDisplay = document.getElementById("colorDisplay");
 
-        // Get the colors for the selected palette, defaulting to an empty array if not found
         const colors = palettes[palette] || [];
 
-        // Clear the current color display
         colorDisplay.innerHTML = "";
 
-        // Create and append color swatches
         colors.forEach((color) => {
           const colorSwatch = document.createElement("div");
           colorSwatch.style.backgroundColor = color;
           colorSwatch.className = "w-6 h-6 rounded-full border border-gray-300";
           colorDisplay.appendChild(colorSwatch);
         });
-      }
-
-      // Function to retrieve the selected palette's colors as an array
-      function getPaletteColors() {
-        const palette = document.getElementById("palette").value;
-        return palettes[palette] || [];
       }
 
       // Initialize with the default palette colors once the DOM is fully loaded
