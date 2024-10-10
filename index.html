@@ -62,21 +62,14 @@
 
       <!-- Custom Palette Inputs (hidden by default) -->
       <div id="customPaletteContainer" class="mb-4" style="display: none">
-        <label for="customPaletteColors" class="text-gray-700"
-          >Custom Colors:</label
-        >
+        <label for="customPaletteColors" class="text-gray-700">Custom Colors:</label>
         <div id="customPaletteColors" class="flex flex-wrap gap-2 mt-2">
-          <input
-            type="color"
-            class="w-10 h-10"
-            onchange="updateCustomPalette()"
-          />
           <button
             type="button"
             onclick="addCustomColor()"
-            class="bg-gray-300 px-2 py-1 rounded"
+            class="bg-gray-300 w-10 h-10 rounded flex items-center justify-center"
           >
-            + Add Color
+            +
           </button>
         </div>
       </div>
@@ -206,7 +199,15 @@
         colorInput.type = "color";
         colorInput.className = "w-10 h-10";
         colorInput.onchange = updateCustomPalette;
-        customPaletteColors.appendChild(colorInput);
+
+        // Insert the new color input before the "+" button
+        customPaletteColors.insertBefore(
+          colorInput,
+          customPaletteColors.querySelector("button")
+        );
+
+        // Update the palette display immediately
+        updateCustomPalette();
       }
 
       function updateCustomPalette() {
