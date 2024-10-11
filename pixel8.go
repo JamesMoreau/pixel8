@@ -19,8 +19,7 @@ import (
 
 /*
 TODO
--add examples
--delete openImage
+move background and tailwind to local.
 */
 
 func main() {

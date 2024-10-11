@@ -5,10 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>pixel8</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      /* Retro pixel art background pattern */
+      body {
+        background: #3d597f;
+        background-image: url("https://www.transparenttextures.com/patterns/axiom-pattern.png");
+        background-size: auto;
+        background-blend-mode: multiply;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        /* align-items: center;
+        justify-content: center; */
+      }
+    </style>
   </head>
-  <body class="bg-gray-100 p-6">
-    <h1 class="text-3xl font-bold text-center mb-1">pixel8</h1>
-    <h2 class="text-lg text-gray-600 text-center mb-6">
+  <body class="p-6">
+    <h1 class="text-4xl font-bold text-center text-gray-200 mb-1">pixel8</h1>
+    <h2 class="text-lg text-gray-300 text-center mb-6">
       Convert any image to pixel art
     </h2>
 
@@ -62,7 +76,9 @@
 
       <!-- Custom Palette Inputs (hidden by default) -->
       <div id="customPaletteContainer" class="mb-4" style="display: none">
-        <label for="customPaletteColors" class="text-gray-700">Custom Colors:</label>
+        <label for="customPaletteColors" class="text-gray-700"
+          >Custom Colors:</label
+        >
         <div id="customPaletteColors" class="flex flex-wrap gap-2 mt-2">
           <button
             type="button"
@@ -89,18 +105,34 @@
       </div>
       <img
         id="outputImage"
-        class="w-full border rounded-md"
+        class="w-full border rounded-md mb-4"
         style="display: none"
         alt="Processed pixel art output"
       />
+      <div id="outputButtons" style="display: none" class="flex space-x-4">
+        <a
+          id="openImageLink"
+          href="#"
+          target="_blank"
+          class="bg-gray-700 text-white py-2 px-4 rounded-md text-center"
+          >Open in Fullscreen</a
+        >
+        <a
+          id="downloadImageLink"
+          href="#"
+          download="pixel8_art.png"
+          class="bg-green-600 text-white py-2 px-4 rounded-md text-center"
+          >Download Image</a
+        >
+      </div>
     </div>
 
-    <footer class="mt-8 text-center text-gray-600">
+    <footer class="mt-8 text-center text-gray-400">
       <p>
         WASM Required -
         <a
           href="https://www.github.com/JamesMoreau"
-          class="text-blue-600 hover:underline"
+          class="text-blue-500 hover:underline"
           >Github</a
         >
       </p>
@@ -159,9 +191,8 @@
         const file = fileInput.files[0];
         const reader = new FileReader();
         reader.onload = async function () {
-          const imageData = reader.result; // This is a base64-encoded string.
+          const imageData = reader.result;
 
-          // Convert hex color strings to RGBA values.
           const rgbaPalette = palette.map(hexToRGBA);
 
           // Call the WASM function with the image data, block size, and palette.
@@ -171,26 +202,35 @@
             rgbaPalette
           );
 
-          // Display the resulting image.
           const outputImage = document.getElementById("outputImage");
           const outputPlaceholder =
             document.getElementById("outputPlaceholder");
+          const outputButtons = document.getElementById("outputButtons");
 
           // Hide the placeholder and show the processed image.
           outputPlaceholder.style.display = "none";
           outputImage.style.display = "block";
           outputImage.src = resultImageData;
+
+          const openImageLink = document.getElementById("openImageLink");
+          openImageLink.href = resultImageData;
+
+          const downloadImageLink =
+            document.getElementById("downloadImageLink");
+          downloadImageLink.href = resultImageData;
+
+          // Show the output buttons.
+          outputButtons.style.display = "flex";
         };
         reader.readAsDataURL(file);
       }
 
-      // Helper function to convert a hex color string to an RGBA array.
       function hexToRGBA(hex) {
         const bigint = parseInt(hex.slice(1), 16);
         const r = (bigint >> 16) & 255;
         const g = (bigint >> 8) & 255;
         const b = bigint & 255;
-        return [r, g, b, 255]; // Assuming alpha is always 255 (fully opaque).
+        return [r, g, b, 255];
       }
 
       function updatePaletteColors() {
@@ -227,13 +267,11 @@
         colorInput.className = "w-10 h-10";
         colorInput.onchange = updateCustomPalette;
 
-        // Insert the new color input before the "+" button
         customPaletteColors.insertBefore(
           colorInput,
           customPaletteColors.querySelector("button")
         );
 
-        // Update the palette display immediately
         updateCustomPalette();
       }
 
