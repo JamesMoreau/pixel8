@@ -113,8 +113,8 @@
         <a
           id="openImageLink"
           href="#"
-          target="_blank"
           class="bg-gray-700 text-white py-2 px-4 rounded-md text-center"
+          onclick="openImageInNewTab()"
           >Open in Fullscreen</a
         >
         <a
@@ -223,6 +223,24 @@
           outputButtons.style.display = "flex";
         };
         reader.readAsDataURL(file);
+      }
+
+      function openImageInNewTab() {
+        const outputImage = document.getElementById("outputImage");
+
+        if (outputImage && outputImage.src) {
+          // Open the image in a new tab.
+          const newWindow = window.open();
+          if (newWindow) {
+            // Write the image directly to the new window's document.
+            newWindow.document.write(
+              `<img src="${outputImage.src}"/>`
+            );
+            newWindow.document.title = "Pixel Art - Fullscreen";
+          }
+        } else {
+          alert("No image available to open.");
+        }
       }
 
       function hexToRGBA(hex) {
