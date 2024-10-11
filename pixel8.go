@@ -17,11 +17,6 @@ import (
 	"golang.org/x/image/draw"
 )
 
-/*
-TODO
-move background and tailwind to local.
-*/
-
 func main() {
 	fmt.Println("Hello web assembly from Go!")
 	js.Global().Set("processPixel8", js.FuncOf(jsWrapperProcessPixel8))
