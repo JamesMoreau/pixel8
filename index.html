@@ -9,7 +9,7 @@
       /* Retro pixel art background pattern */
       body {
         background: #3d597f;
-        background-image: url("https://www.transparenttextures.com/patterns/axiom-pattern.png");
+        background-image: url("assets/axiom-pattern.png");
         background-size: auto;
         background-blend-mode: multiply;
         min-height: 100vh;
@@ -76,7 +76,7 @@
 
       <!-- Custom Palette Inputs (hidden by default) -->
       <div id="customPaletteContainer" class="mb-4" style="display: none">
-        <label for="customPaletteColors" class="text-gray-700"
+        <p for="customPaletteColors" class="text-gray-700"
           >Custom Colors:</label
         >
         <div id="customPaletteColors" class="flex flex-wrap gap-2 mt-2">
@@ -233,9 +233,7 @@
           const newWindow = window.open();
           if (newWindow) {
             // Write the image directly to the new window's document.
-            newWindow.document.write(
-              `<img src="${outputImage.src}"/>`
-            );
+            newWindow.document.write(`<img src="${outputImage.src}"/>`);
             newWindow.document.title = "Pixel Art - Fullscreen";
           }
         } else {
